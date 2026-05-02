@@ -1,13 +1,11 @@
-# Project Memory & Beads
+# Task Status Beads
+[x] Bead 001: Research requirements and skills (Completed)
+[x] Bead 002: Generate E-Commerce Order Management API Spec (Completed)
+[x] Bead 003: Generate Ride Booking API Spec (Completed)
+[x] Bead 004: Generate Banking Transaction API Spec (Completed)
+[x] Bead 005: Generate Inventory Management API Spec (Completed)
+[x] Bead 006: Generate Media Streaming API Spec (Completed)
 
-This file tracks the status of tasks and stored knowledge using the **Beads** system.
-
-## Task Status Beads
-- [x] **Bead 001:** Project Initialization (Completed)
-- [ ] **Bead 002:** Environment Setup (In Progress)
-- [ ] **Bead 003:** First Skill Creation (Pending)
-
-## Knowledge Beads
-- **KB-001:** Gemini CLI installation uses `npm install -g @google/gemini-cli`.
-- **KB-002:** API keys are managed via Google AI Studio.
-- **KB-003:** Beads are the primary mechanism for state and memory.
+# Knowledge Beads
+KB-001: Requirements file contains 5 distinct API definitions.
+KB-002: Skill `req-to-api-spec-generator` follows OpenAPI 3.x standards.
