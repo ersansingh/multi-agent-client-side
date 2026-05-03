@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: Inventory Management API
+  description: API to track and manage product stock across multiple warehouses.
+  version: 1.0.0
+servers:
+  - url: https://api.inventory.example.com/v1
+components:
+  schemas:
+    Warehouse:
+      type: object
+      properties:
+        warehouse_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        location:
+          type: string
+    InventoryItem:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        warehouse_id:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 0
+        last_updated:
+          type: string
+          format: date-time
+    StockTransfer:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        from_warehouse_id:
+          type: string
+          format: uuid
+        to_warehouse_id:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+      required:
+        - product_id
+        - from_warehouse_id
+        - to_warehouse_id
+        - quantity
+paths:
+  /warehouses:
+    post:
+      summary: Create warehouse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+      responses:
+        '201':
+          description: Warehouse created
+    get:
+      summary: List warehouses
+      responses:
+        '200':
+          description: List of warehouses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Warehouse'
+  /inventory:
+    post:
+      summary: Add inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+      responses:
+        '201':
+          description: Inventory added
+  /inventory/{product_id}:
+    get:
+      summary: Get stock by product
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Stock levels for the product
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+    patch:
+      summary: Update stock
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                warehouse_id:
+                  type: string
+                  format: uuid
+                quantity:
+                  type: integer
+              required:
+                - warehouse_id
+                - quantity
+      responses:
+        '200':
+          description: Stock updated
+  /inventory/transfer:
+    post:
+      summary: Transfer stock between warehouses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockTransfer'
+      responses:
+        '200':
+          description: Transfer successful
+x-rules:
+  - Stock cannot be negative
+  - Transfers must be atomic

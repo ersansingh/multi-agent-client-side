@@ -1,0 +1,194 @@
+openapi: 3.0.0
+info:
+  title: Banking Transaction API
+  description: Secure API for managing accounts and conducting financial transactions.
+  version: 1.0.0
+servers:
+  - url: https://api.banking.example.com/v1
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.banking.example.com/oauth/token
+          scopes:
+            read:accounts: Read account information
+            write:transactions: Perform money transfers
+  schemas:
+    Account:
+      type: object
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        owner_name:
+          type: string
+        balance:
+          type: number
+          format: float
+        currency:
+          type: string
+          example: USD
+    Transaction:
+      type: object
+      properties:
+        transaction_id:
+          type: string
+          format: uuid
+        from_account:
+          type: string
+          format: uuid
+        to_account:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, SUCCESS, FAILED]
+        timestamp:
+          type: string
+          format: date-time
+    TransferRequest:
+      type: object
+      properties:
+        from_account:
+          type: string
+          format: uuid
+        to_account:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+      required:
+        - from_account
+        - to_account
+        - amount
+        - currency
+  parameters:
+    IdempotencyKey:
+      name: X-Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+security:
+  - OAuth2: [read:accounts, write:transactions]
+paths:
+  /accounts:
+    post:
+      summary: Create account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+  /accounts/{account_id}:
+    get:
+      summary: Get account details
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Account details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+  /accounts/{account_id}/balance:
+    get:
+      summary: Get balance
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Current balance
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: number
+                    format: float
+                  currency:
+                    type: string
+  /transactions/transfer:
+    post:
+      summary: Transfer money
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        '202':
+          description: Transfer accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+  /transactions:
+    get:
+      summary: Get transaction history
+      parameters:
+        - name: account_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+  /transactions/{transaction_id}:
+    get:
+      summary: Get transaction by ID
+      parameters:
+        - name: transaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+x-consistency: Strong
+x-encryption: Required for sensitive data

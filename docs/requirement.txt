@@ -1,0 +1,265 @@
+# 🧾 1. E-Commerce Order Management API
+
+## 🎯 Objective
+
+Build APIs to manage customers, products, and orders.
+
+## 📌 Functional Requirements
+
+### 🔹 Customer APIs
+
+* Create customer
+* Get customer by ID
+* Update customer
+* Delete customer
+
+**Fields**
+
+* id (UUID)
+* name
+* email (unique)
+* phone
+* address
+
+---
+
+### 🔹 Product APIs
+
+* Create product
+* List products (pagination + filtering)
+* Update product
+* Delete product
+
+**Fields**
+
+* id (UUID)
+* name
+* description
+* price
+* stock_quantity
+* category
+
+---
+
+### 🔹 Order APIs
+
+* Create order
+* Get order by ID
+* List orders by customer
+* Cancel order
+
+**Fields**
+
+* id (UUID)
+* customer_id
+* items (product_id, quantity, price)
+* total_amount
+* status (CREATED, PAID, SHIPPED, CANCELLED)
+* created_at
+
+---
+
+## 🔐 Non-Functional Requirements
+
+* Authentication: Bearer Token (JWT)
+* Rate limit: 100 requests/min
+* Pagination: page + page_size
+* Error format:
+
+```json
+{
+  "code": "ORDER_NOT_FOUND",
+  "message": "Order not found"
+}
+```
+
+---
+
+# 🚗 2. Ride Booking API (Uber-like)
+
+## 🎯 Objective
+
+Allow users to book rides and drivers to accept them.
+
+---
+
+## 📌 Functional Requirements
+
+### 🔹 User APIs
+
+* Register user
+* Login
+* Get profile
+
+---
+
+### 🔹 Ride APIs
+
+* Request ride
+* Get ride status
+* Cancel ride
+
+**Fields**
+
+* ride_id
+* user_id
+* pickup_location (lat, long)
+* drop_location (lat, long)
+* status (REQUESTED, ACCEPTED, STARTED, COMPLETED, CANCELLED)
+* fare
+
+---
+
+### 🔹 Driver APIs
+
+* Register driver
+* Update availability
+* Accept ride
+
+---
+
+## ⚙️ Special Requirements
+
+* Real-time updates (polling/webhook)
+* Geo-location validation
+* Fare estimation endpoint
+
+---
+
+# 🏦 3. Banking Transaction API
+
+## 🎯 Objective
+
+Secure API for managing accounts and transactions.
+
+---
+
+## 📌 Functional Requirements
+
+### 🔹 Account APIs
+
+* Create account
+* Get account details
+* Get balance
+
+---
+
+### 🔹 Transaction APIs
+
+* Transfer money
+* Get transaction history
+* Get transaction by ID
+
+**Fields**
+
+* transaction_id
+* from_account
+* to_account
+* amount
+* currency
+* status (PENDING, SUCCESS, FAILED)
+* timestamp
+
+---
+
+## 🔐 Security Requirements
+
+* OAuth2 authentication
+* Encryption for sensitive data
+* Idempotency for transactions
+
+---
+
+## ⚠️ Constraints
+
+* No duplicate transactions
+* Strong consistency required
+
+---
+
+# 📦 4. Inventory Management API
+
+## 🎯 Objective
+
+Track stock across warehouses.
+
+---
+
+## 📌 Functional Requirements
+
+### 🔹 Inventory APIs
+
+* Add inventory
+* Update stock
+* Get stock by product
+* Transfer stock between warehouses
+
+---
+
+### 🔹 Warehouse APIs
+
+* Create warehouse
+* List warehouses
+
+---
+
+**Fields**
+
+* product_id
+* warehouse_id
+* quantity
+* last_updated
+
+---
+
+## ⚙️ Rules
+
+* Stock cannot be negative
+* Transfers must be atomic
+
+---
+
+# 🎬 5. Media Streaming API (Netflix-like)
+
+## 🎯 Objective
+
+Serve content metadata and manage user watchlists.
+
+---
+
+## 📌 Functional Requirements
+
+### 🔹 Content APIs
+
+* List movies/shows
+* Get content details
+* Search content
+
+---
+
+### 🔹 User APIs
+
+* Add to watchlist
+* Remove from watchlist
+* Get watch history
+
+---
+
+**Fields**
+
+* content_id
+* title
+* genre
+* duration
+* rating
+* release_year
+
+---
+
+## ⚙️ Features
+
+* Pagination + filtering
+* Recommendation endpoint
+* Caching for performance
+
+---

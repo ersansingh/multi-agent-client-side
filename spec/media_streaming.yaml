@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  title: Media Streaming API
+  description: Netflix-like API for content discovery and user watchlist management.
+  version: 1.0.0
+servers:
+  - url: https://api.streaming.example.com/v1
+components:
+  schemas:
+    Content:
+      type: object
+      properties:
+        content_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        genre:
+          type: string
+        duration:
+          type: string
+          description: Duration in ISO 8601 format (e.g., PT1H30M)
+        rating:
+          type: number
+          format: float
+        release_year:
+          type: integer
+    UserWatchlist:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        content_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    WatchHistory:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              content_id:
+                type: string
+                format: uuid
+              watched_at:
+                type: string
+                format: date-time
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        default: 20
+paths:
+  /content:
+    get:
+      summary: List movies/shows
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: genre
+          in: query
+          schema:
+            type: string
+        - name: release_year
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Content'
+  /content/search:
+    get:
+      summary: Search content
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Content'
+  /content/{content_id}:
+    get:
+      summary: Get content details
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Content details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Content'
+  /recommendations:
+    get:
+      summary: Get recommendations
+      responses:
+        '200':
+          description: Recommended content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Content'
+  /user/watchlist:
+    get:
+      summary: Get watchlist
+      responses:
+        '200':
+          description: User watchlist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWatchlist'
+    post:
+      summary: Add to watchlist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Added to watchlist
+  /user/watchlist/{content_id}:
+    delete:
+      summary: Remove from watchlist
+      parameters:
+        - name: content_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Removed from watchlist
+  /user/history:
+    get:
+      summary: Get watch history
+      responses:
+        '200':
+          description: User watch history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchHistory'
+x-features:
+  - Pagination + filtering
+  - Recommendation endpoint
+  - Caching for performance

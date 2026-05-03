@@ -219,3 +219,8 @@ __marimo__/
 
 #Idea file
 .idea
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
+.beads
